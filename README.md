@@ -173,12 +173,12 @@ Not every task needs the most powerful model. A practical selection framework:
 
 ## About FuturMix
 
-[FuturMix](https://futurmix.ai) is an enterprise AI agent company based in San Francisco. We build the infrastructure layer that makes AI agents reliable enough for production — 22+ models, 99.99% SLA, automatic failover, zero data retention.
+[FuturMix](https://futurmix.one) is an enterprise AI agent company based in San Francisco. We build the infrastructure layer that makes AI agents reliable enough for production — 99.99% SLA, automatic failover, zero data retention.
 
 Our platform supports agents across all four workflow categories: strategy & analysis, content production, code & engineering, and research & due diligence.
 
 ### Links
-- Website: [futurmix.ai](https://futurmix.ai)
+- Website: [futurmix.one](https://futurmix.one)
 - Dev.to: [@futurmix](https://dev.to/futurmix)
 - X: [@futurmix](https://x.com/futurmix)
 
