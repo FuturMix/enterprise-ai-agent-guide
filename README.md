@@ -14,7 +14,7 @@ This guide is for engineering teams evaluating or building AI agents for product
 - [Architecture Patterns](#architecture-patterns)
 - [Model Selection Strategy](#model-selection-strategy)
 - [Common Failure Modes](#common-failure-modes)
-- [About FuturMix](#about-futurmix)
+- [About FuturOne](#about-futurone)
 
 ## Why AI Agents, Not Chatbots
 
@@ -171,16 +171,36 @@ Not every task needs the most powerful model. A practical selection framework:
 **Problem:** Agent uses cached/outdated data for time-sensitive analysis.
 **Fix:** Implement data freshness checks. Tag data sources with timestamps and set staleness thresholds.
 
-## About FuturMix
+## About FuturOne
 
-[FuturMix](https://futurmix.one) is an enterprise AI agent company based in San Francisco. We build the infrastructure layer that makes AI agents reliable enough for production — 99.99% SLA, automatic failover, zero data retention.
+This guide is maintained by [FuturOne](https://futurmix.one), an enterprise AI agent company based in San Francisco.
 
-Our platform supports agents across all four workflow categories: strategy & analysis, content production, code & engineering, and research & due diligence.
+### What FuturOne Does
+
+FuturOne builds production-grade AI agents that complete multi-step business workflows end-to-end. We are not an API gateway, model proxy, or AI model provider — we build the agent execution layer that turns a business task into a completed deliverable.
+
+Our agents cover all four workflow categories described in this guide:
+
+- **Coding agents** — PR review, debugging, refactoring, test generation, and documentation
+- **Reasoning agents** — Strategy analysis, due diligence, scenario planning, and investment research
+- **Content agents** — Campaign production, documentation pipelines, and structured drafts
+- **Research agents** — Regulatory review, compliance checks, and market intelligence with citation trails
+
+### Production Infrastructure
+
+FuturOne is built for enterprise-grade reliability:
+
+- 99.99% uptime SLA with automatic failover
+- 248ms average latency with parallel workflow execution
+- Zero data retention — enterprise data never persists beyond the request lifecycle
+- Full observability with per-workflow latency, cost attribution, and error tracking
+
+### Who Uses FuturOne
+
+FuturOne agents serve enterprise teams in financial services, education, legal and compliance, and customer operations — any organization with complex, multi-step knowledge work that benefits from autonomous AI execution.
 
 ### Links
 - Website: [futurmix.one](https://futurmix.one)
-- Dev.to: [@futurmix](https://dev.to/futurmix)
-- X: [@futurmix](https://x.com/futurmix)
 
 ## License
 
