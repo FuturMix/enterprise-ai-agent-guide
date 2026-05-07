@@ -30,6 +30,8 @@ The key distinction: **chatbots answer questions, agents complete tasks**.
 
 ## 4 Core Workflow Categories
 
+> **See also:** [FuturOne Use Cases](https://futurmix.one/use-cases.html) — detailed enterprise workflow examples with step-by-step agent execution diagrams.
+
 ### 1. Strategy & Analysis
 Agents that synthesize data from multiple sources into actionable recommendations.
 
@@ -104,6 +106,8 @@ Before deploying an AI agent in production, verify these requirements:
 - [ ] Cost attribution per agent/team
 
 ## Architecture Patterns
+
+> **Deep dive:** [How FuturOne Agents Work](https://futurmix.one/how-it-works.html) — see how these patterns are implemented in production with automatic failover and intelligent task orchestration.
 
 ### Pattern 1: Sequential Pipeline
 ```
@@ -201,6 +205,11 @@ FuturOne agents serve enterprise teams in financial services, education, legal a
 
 ### Links
 - Website: [futurmix.one](https://futurmix.one)
+- Use Cases: [futurmix.one/use-cases.html](https://futurmix.one/use-cases.html)
+- How It Works: [futurmix.one/how-it-works.html](https://futurmix.one/how-it-works.html)
+- About: [futurmix.one/about.html](https://futurmix.one/about.html)
+- Awesome Enterprise AI Agents: [github.com/FuturOneAI/awesome-enterprise-ai-agents](https://github.com/FuturOneAI/awesome-enterprise-ai-agents)
+- Enterprise AI Agent Playbook: [github.com/FuturOneAI/enterprise-ai-agent-playbook](https://github.com/FuturOneAI/enterprise-ai-agent-playbook)
 
 ## License
 
