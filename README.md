@@ -1,216 +1,259 @@
-# Enterprise AI Agent Guide
+# Multi-Model AI API Guide
 
-A practical guide to building and deploying production-grade AI agents for enterprise workflows.
+A practical guide to using multiple AI models (Claude, GPT, Gemini, DeepSeek) through a single API — covering model selection, pricing optimization, failover strategies, and production best practices.
 
-## What This Guide Covers
+## Why Multi-Model?
 
-This guide is for engineering teams evaluating or building AI agents for production use. It covers the architectural decisions, infrastructure requirements, and operational patterns that separate demo-grade agents from production-grade ones.
+Using a single AI provider is risky and expensive. Here's why production teams use multiple models:
+
+| Challenge | Single Provider | Multi-Model Approach |
+|-----------|----------------|---------------------|
+| **Outages** | Your app goes down | Automatic failover to backup model |
+| **Pricing** | Locked into one pricing tier | Use cheapest model per task type |
+| **Quality** | One-size-fits-all | Best model for each use case |
+| **Vendor lock-in** | Costly migration | Switch models with one line change |
+| **Rate limits** | Hit walls during traffic spikes | Distribute across providers |
 
 ## Table of Contents
 
-- [Why AI Agents, Not Chatbots](#why-ai-agents-not-chatbots)
-- [4 Core Workflow Categories](#4-core-workflow-categories)
-- [Production Requirements Checklist](#production-requirements-checklist)
+- [Model Selection by Use Case](#model-selection-by-use-case)
+- [Pricing Comparison (May 2026)](#pricing-comparison-may-2026)
 - [Architecture Patterns](#architecture-patterns)
-- [Model Selection Strategy](#model-selection-strategy)
-- [Common Failure Modes](#common-failure-modes)
-- [About FuturOne](#about-futurone)
+- [Quick Start](#quick-start)
+- [Failover Strategies](#failover-strategies)
+- [Production Checklist](#production-checklist)
+- [Common Mistakes](#common-mistakes)
 
-## Why AI Agents, Not Chatbots
+## Model Selection by Use Case
 
-| Characteristic | Chatbot | AI Agent |
-|---|---|---|
-| Interaction | Human prompts, AI responds | Human assigns task, AI executes workflow |
-| Context | Single conversation | Multi-step, multi-source |
-| Output | Text response | Completed deliverable |
-| Error handling | Returns error message | Retries, falls back, degrades gracefully |
-| State | Stateless between messages | Maintains task state across steps |
+| Use Case | Recommended Model | Why |
+|----------|------------------|-----|
+| Code generation & review | Claude Sonnet 4.6 | Best code quality per dollar |
+| Complex reasoning | Claude Opus 4.7 | Strongest instruction following |
+| Creative writing & copy | GPT-5.5 | More varied, engaging prose |
+| Structured data extraction | GPT-5.4 Pro | Reliable JSON output |
+| Quick classification | Claude Haiku 4.5 | Fastest, cheapest |
+| Long document analysis | Claude Sonnet 4.6 | 200K context window |
+| Math & logic proofs | o3-pro | Deepest reasoning |
+| Cost-sensitive batch jobs | DeepSeek V3 | Extremely cheap at scale |
 
-The key distinction: **chatbots answer questions, agents complete tasks**.
+**Key insight:** Don't pick one model — use the right model for each task type. This gives better results AND lower costs.
 
-## 4 Core Workflow Categories
+## Pricing Comparison (May 2026)
 
-> **See also:** [FuturOne Use Cases](https://futurmix.one/use-cases.html) — detailed enterprise workflow examples with step-by-step agent execution diagrams.
+| Model | Input (per 1M tokens) | Output (per 1M tokens) | Context |
+|-------|-----------------------|------------------------|---------|
+| Claude Opus 4.7 | $5.00 | $25.00 | 200K |
+| Claude Sonnet 4.6 | $3.00 | $15.00 | 200K |
+| Claude Haiku 4.5 | $1.00 | $5.00 | 200K |
+| GPT-5.5 | $3.00 | $12.00 | 128K |
+| GPT-5.4 Pro | $2.50 | $10.00 | 128K |
+| o3-pro | $20.00 | $80.00 | 200K |
+| Gemini 3.1 Pro | $1.25 | $10.00 | 1M |
+| DeepSeek V3 | $0.27 | $1.10 | 128K |
 
-### 1. Strategy & Analysis
-Agents that synthesize data from multiple sources into actionable recommendations.
-
-**Use cases:**
-- Automated due diligence reports
-- Competitive landscape analysis
-- Market trend monitoring
-- Scenario planning and simulation
-
-**What makes it work:** The agent needs to hold context across 50+ data sources simultaneously — more than any individual analyst can process in a single pass.
-
-### 2. Content Production
-Agents that handle end-to-end content workflows, not just first drafts.
-
-**Use cases:**
-- Research → Draft → Edit → Format → Publish pipelines
-- Multi-language content adaptation
-- Style guide enforcement across teams
-- Content repurposing (blog → social → email → slides)
-
-**What makes it work:** Content agents are only valuable when they handle the full pipeline. Generating a draft that still needs 2 hours of editing isn't saving time.
-
-### 3. Code & Engineering
-Agents that function as persistent engineering team members.
-
-**Use cases:**
-- PR review against project conventions
-- Debugging with full repository context
-- Legacy code refactoring
-- Documentation generation from code behavior
-- Dependency updates and security patches
-
-**What makes it work:** Code agents deliver the most value on maintenance work — the "should do but nobody wants to" tasks that accumulate as technical debt.
-
-### 4. Research & Due Diligence
-Agents that perform structured deep dives with citation tracking.
-
-**Use cases:**
-- Legal document review
-- Compliance verification
-- Academic literature surveys
-- Patent landscape analysis
-
-**What makes it work:** Research agents must maintain citation chains (every claim traced to its source) and assign confidence scores. Thoroughness matters more than speed.
-
-## Production Requirements Checklist
-
-Before deploying an AI agent in production, verify these requirements:
-
-### Reliability
-- [ ] 99.99% effective uptime (agent completes tasks successfully)
-- [ ] Automatic model failover (switch to equivalent model if primary is unavailable)
-- [ ] Graceful degradation (partial results > complete failure)
-- [ ] Health monitoring and alerting
-
-### Performance
-- [ ] Sub-500ms average latency per model call
-- [ ] Parallel execution for independent workflow steps
-- [ ] Request queuing and backpressure handling
-- [ ] Rate limit management across model providers
-
-### Security & Compliance
-- [ ] Zero data retention (enterprise data doesn't persist beyond request lifecycle)
-- [ ] Audit logging (what happened, without recording what was said)
-- [ ] Authentication on all access points
-- [ ] Network isolation options
-
-### Observability
-- [ ] Per-request latency tracking
-- [ ] Token usage monitoring
-- [ ] Error rate dashboards
-- [ ] Cost attribution per agent/team
+> 💡 **Cost tip:** Multi-model API platforms like [FuturMix](https://futurmix.ai) offer 10-30% discounts on these prices through volume negotiation with providers.
 
 ## Architecture Patterns
 
-> **Deep dive:** [How FuturOne Agents Work](https://futurmix.one/how-it-works.html) — see how these patterns are implemented in production with automatic failover and intelligent task orchestration.
+### Pattern 1: Task-Based Routing
 
-### Pattern 1: Sequential Pipeline
+Route requests to different models based on task type:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://futurmix.ai/v1",
+    api_key="your-api-key"
+)
+
+def get_model_for_task(task_type: str) -> str:
+    routing = {
+        "code_review": "claude-sonnet-4-6",
+        "creative_writing": "gpt-5.5",
+        "classification": "claude-haiku-4-5",
+        "data_extraction": "gpt-5.4-pro",
+        "complex_reasoning": "claude-opus-4-7",
+        "batch_processing": "deepseek-v3",
+    }
+    return routing.get(task_type, "claude-sonnet-4-6")
+
+response = client.chat.completions.create(
+    model=get_model_for_task("code_review"),
+    messages=[{"role": "user", "content": "Review this function..."}]
+)
 ```
-Input → Step 1 → Step 2 → Step 3 → Output
+
+### Pattern 2: Cascading (Cost Optimization)
+
+Start with the cheapest model, escalate if quality is insufficient:
+
+```python
+def cascading_completion(messages, quality_threshold=0.8):
+    models = [
+        "claude-haiku-4-5",     # Try cheapest first
+        "claude-sonnet-4-6",    # Mid-tier fallback
+        "claude-opus-4-7",      # Premium fallback
+    ]
+    
+    for model in models:
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages
+        )
+        if evaluate_quality(response) >= quality_threshold:
+            return response
+    
+    return response  # Return best attempt
 ```
-Best for: Content production, report generation
-Tradeoff: Simple but slow (each step waits for the previous)
 
-### Pattern 2: Parallel Fan-Out
+### Pattern 3: Consensus (High-Stakes Decisions)
+
+Query multiple models and compare for critical decisions:
+
+```python
+import asyncio
+
+async def consensus_completion(messages):
+    models = ["claude-sonnet-4-6", "gpt-5.5", "gemini-3.1-pro"]
+    
+    responses = await asyncio.gather(*[
+        async_completion(model, messages) for model in models
+    ])
+    
+    # Compare responses, flag disagreements
+    return aggregate_responses(responses)
 ```
-         ┌→ Source A ─┐
-Input ───┼→ Source B ──┼→ Synthesize → Output
-         └→ Source C ─┘
+
+## Quick Start
+
+### Using a Multi-Model API Platform
+
+The simplest approach — one endpoint, one API key, all models:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://futurmix.ai/v1",
+    api_key="your-futurmix-key"
+)
+
+# Use any model with the same client
+response = client.chat.completions.create(
+    model="claude-sonnet-4-6",  # or "gpt-5.5", "gemini-3.1-pro", etc.
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
 ```
-Best for: Research, competitive analysis
-Tradeoff: Faster but requires careful result merging
 
-### Pattern 3: Conditional Routing
+### Node.js
+
+```javascript
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+    baseURL: 'https://futurmix.ai/v1',
+    apiKey: 'your-futurmix-key'
+});
+
+const response = await client.chat.completions.create({
+    model: 'claude-sonnet-4-6',
+    messages: [{ role: 'user', content: 'Hello!' }]
+});
 ```
-Input → Classifier → Route to specialized model → Output
+
+### cURL
+
+```bash
+curl https://futurmix.ai/v1/chat/completions \
+  -H "Authorization: Bearer your-futurmix-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-6",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
 ```
-Best for: Multi-domain agents that handle different task types
-Tradeoff: Classifier accuracy is critical; misrouting degrades quality
 
-### Pattern 4: Iterative Refinement
+## Failover Strategies
+
+### Automatic Provider Failover
+
+A good multi-model platform handles failover automatically:
+
 ```
-Input → Generate → Evaluate → Refine → Evaluate → Output
+Request → Claude Sonnet 4.6
+          ├── Success → Return response
+          └── Failure → GPT-5.5 (automatic)
+                        ├── Success → Return response
+                        └── Failure → Gemini 3.1 Pro (automatic)
 ```
-Best for: Code generation, precision-critical content
-Tradeoff: Higher quality but higher cost and latency
 
-## Model Selection Strategy
+### Manual Failover (DIY)
 
-Not every task needs the most powerful model. A practical selection framework:
+If managing your own failover:
 
-| Task Type | Priority | Model Tier |
-|---|---|---|
-| Strategy analysis | Accuracy > Speed | Top-tier reasoning model |
-| Content drafting | Balance | Mid-tier with good instruction following |
-| Code generation | Accuracy + Speed | Top-tier coding model |
-| Classification/routing | Speed > Accuracy | Fast, cheap model |
-| Summarization | Speed + Cost | Mid-tier model |
+```python
+import time
 
-**Key principle:** Model selection should be configurable per-agent, not hardcoded. When a new model launches, you should be able to route appropriate tasks to it without code changes.
+def resilient_completion(messages, max_retries=3):
+    models = ["claude-sonnet-4-6", "gpt-5.5", "gemini-3.1-pro"]
+    
+    for model in models:
+        try:
+            return client.chat.completions.create(
+                model=model,
+                messages=messages,
+                timeout=30
+            )
+        except Exception as e:
+            print(f"{model} failed: {e}")
+            time.sleep(1)
+    
+    raise Exception("All models failed")
+```
 
-## Common Failure Modes
+## Production Checklist
 
-### 1. Silent Confidence
-**Problem:** Agent produces plausible but wrong output without flagging uncertainty.
-**Fix:** Implement confidence scoring. Agents should surface uncertainty, not hide it.
+Before going to production with multi-model AI:
 
-### 2. Context Window Overflow
-**Problem:** Long workflows exceed the model's context window, causing degraded output quality.
-**Fix:** Implement context management — summarize intermediate results, keep only relevant context for each step.
+- [ ] **Model selection matrix** — documented which model handles which task type
+- [ ] **Failover chain** — defined backup models for each primary
+- [ ] **Cost tracking** — per-model, per-user cost monitoring
+- [ ] **Rate limit handling** — retry logic with exponential backoff
+- [ ] **Response validation** — check output format before using
+- [ ] **Prompt caching** — enable for repeated system prompts (90% input cost savings)
+- [ ] **Timeout configuration** — per-model timeouts based on expected latency
+- [ ] **Logging** — request/response logging for debugging (without storing PII)
+- [ ] **SLA monitoring** — track uptime and latency per provider
+- [ ] **Budget alerts** — notifications before hitting spending limits
 
-### 3. Cascading Failures
-**Problem:** One failing step causes the entire workflow to fail.
-**Fix:** Implement circuit breakers and fallback paths. Each step should have a defined failure mode.
+## Common Mistakes
 
-### 4. Cost Explosion
-**Problem:** Iterative refinement loops run indefinitely, consuming excessive tokens.
-**Fix:** Set maximum iteration limits and cost caps per workflow execution.
+### 1. Using One Model for Everything
+Claude Opus at $25/1M output tokens for simple classification? That's 25x more expensive than Haiku for the same result quality.
 
-### 5. Stale Data
-**Problem:** Agent uses cached/outdated data for time-sensitive analysis.
-**Fix:** Implement data freshness checks. Tag data sources with timestamps and set staleness thresholds.
+### 2. No Failover Plan
+Every provider has outages. If your app goes down when OpenAI goes down, you need multi-model failover.
 
-## About FuturOne
+### 3. Ignoring Prompt Caching
+If your system prompt is the same across requests, prompt caching can cut input costs by 90%. Both Anthropic and OpenAI support this.
 
-This guide is maintained by [FuturOne](https://futurmix.one), an enterprise AI agent company based in San Francisco.
+### 4. Hardcoding Model Names
+Use configuration, not hardcoded strings. Models deprecate regularly — you need to swap without code changes.
 
-### What FuturOne Does
+### 5. Not Tracking Cost Per Request
+Without per-request cost tracking, you can't optimize. A single runaway loop can burn through your budget in minutes.
 
-FuturOne builds production-grade AI agents that complete multi-step business workflows end-to-end. We are not an API gateway, model proxy, or AI model provider — we build the agent execution layer that turns a business task into a completed deliverable.
+## Resources
 
-Our agents cover all four workflow categories described in this guide:
+- [FuturMix](https://futurmix.ai) — Multi-model AI API platform with 22+ models, up to 30% off
+- [FuturMix Quickstart](https://github.com/FuturMix/futurmix-ai-quickstart) — Code examples
+- [OpenAI API Docs](https://platform.openai.com/docs)
+- [Anthropic API Docs](https://docs.anthropic.com)
+- [Google AI Docs](https://ai.google.dev/docs)
 
-- **Coding agents** — PR review, debugging, refactoring, test generation, and documentation
-- **Reasoning agents** — Strategy analysis, due diligence, scenario planning, and investment research
-- **Content agents** — Campaign production, documentation pipelines, and structured drafts
-- **Research agents** — Regulatory review, compliance checks, and market intelligence with citation trails
+---
 
-### Production Infrastructure
-
-FuturOne is built for enterprise-grade reliability:
-
-- 99.99% uptime SLA with automatic failover
-- 248ms average latency with parallel workflow execution
-- Zero data retention — enterprise data never persists beyond the request lifecycle
-- Full observability with per-workflow latency, cost attribution, and error tracking
-
-### Who Uses FuturOne
-
-FuturOne agents serve enterprise teams in financial services, education, legal and compliance, and customer operations — any organization with complex, multi-step knowledge work that benefits from autonomous AI execution.
-
-### Links
-- Website: [futurmix.one](https://futurmix.one)
-- Use Cases: [futurmix.one/use-cases.html](https://futurmix.one/use-cases.html)
-- How It Works: [futurmix.one/how-it-works.html](https://futurmix.one/how-it-works.html)
-- About: [futurmix.one/about.html](https://futurmix.one/about.html)
-- Awesome Enterprise AI Agents: [github.com/FuturOneAI/awesome-enterprise-ai-agents](https://github.com/FuturOneAI/awesome-enterprise-ai-agents)
-- Enterprise AI Agent Playbook: [github.com/FuturOneAI/enterprise-ai-agent-playbook](https://github.com/FuturOneAI/enterprise-ai-agent-playbook)
-
-## License
-
-This guide is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). You're free to share, adapt, and build upon it with attribution.
+*This guide is maintained by [FuturMix](https://futurmix.ai). Contributions welcome — open an issue or PR.*
