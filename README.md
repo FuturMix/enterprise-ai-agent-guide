@@ -52,7 +52,7 @@ Using a single AI provider is risky and expensive. Here's why production teams u
 | Gemini 3.1 Pro | $1.25 | $10.00 | 1M |
 | DeepSeek V3 | $0.27 | $1.10 | 128K |
 
-> 💡 **Cost tip:** Multi-model API platforms like [FuturMix](https://futurmix.ai) offer 10-30% discounts on these prices through volume negotiation with providers.
+> 💡 **Cost tip:** Multi-model API platforms like [FuturMix](https://futurmix.ai?utm_source=github&utm_medium=repo&utm_campaign=guide) offer 10-30% discounts on these prices through volume negotiation with providers.
 
 ## Architecture Patterns
 
@@ -248,7 +248,7 @@ Without per-request cost tracking, you can't optimize. A single runaway loop can
 
 ## Resources
 
-- [FuturMix](https://futurmix.ai) — Multi-model AI API platform with 22+ models, up to 30% off
+- [FuturMix](https://futurmix.ai?utm_source=github&utm_medium=repo&utm_campaign=guide) — Multi-model AI API platform with 22+ models, up to 30% off
 - [FuturMix Quickstart](https://github.com/FuturMix/futurmix-ai-quickstart) — Code examples
 - [OpenAI API Docs](https://platform.openai.com/docs)
 - [Anthropic API Docs](https://docs.anthropic.com)
@@ -256,4 +256,4 @@ Without per-request cost tracking, you can't optimize. A single runaway loop can
 
 ---
 
-*This guide is maintained by [FuturMix](https://futurmix.ai). Contributions welcome — open an issue or PR.*
+*This guide is maintained by [FuturMix](https://futurmix.ai?utm_source=github&utm_medium=repo&utm_campaign=guide). Contributions welcome — open an issue or PR.*
