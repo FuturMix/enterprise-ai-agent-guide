@@ -1,5 +1,11 @@
 # Multi-Model AI API Guide
 
+[![Try Free](https://img.shields.io/badge/Try_Free-FuturMix_API-CC6B3A?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJMMiA3bDEwIDUgMTAtNS0xMC01ek0yIDE3bDEwIDUgMTAtNS0xMC01LTEwIDV6TTIgMTJsMTAgNSAxMC01LTEwLTUtMTAgNXoiIGZpbGw9IndoaXRlIi8+PC9zdmc+)](https://futurmix.ai/register?utm_source=github&utm_medium=readme&utm_campaign=badge)
+[![Docs](https://img.shields.io/badge/Docs-API_Reference-blue?style=flat-square)](https://futurmix.ai/docs?utm_source=github&utm_medium=readme&utm_campaign=badge)
+[![Models](https://img.shields.io/badge/Models-22%2B-green?style=flat-square)](https://futurmix.ai)
+[![Discount](https://img.shields.io/badge/Save-Up_to_30%25-red?style=flat-square)](https://futurmix.ai)
+
+
 A practical guide to using multiple AI models (Claude, GPT, Gemini, DeepSeek) through a single API — covering model selection, pricing optimization, failover strategies, and production best practices.
 
 ## Why Multi-Model?
